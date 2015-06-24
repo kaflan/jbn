@@ -8,34 +8,6 @@ $(document).ready(function load() {
   var listCard = [];
   var listActive = [];
   var $this = $(this);
-
-  //controller
-  $('div.active ul, div.redcard ul, div.removed ul').sortable({
-    connectWith: 'ul',
-    //change atrr and POSt then
-    update: function zed(event, ui) {
-      if (ui.item.parent().parent().hasClass('active')) {
-       ui.item.attr({'data-status': 'active'});
-
-      }
-      if(ui.item.parent().parent().hasClass('removed')) {
-        ui.item.attr('data-status', 'removed');
-      }
-      if(ui.item.parent().parent().hasClass('redcard')) {
-        ui.item.attr('data-status', 'redcard');
-
-      }
-
-    }
-    //,
-    //sender: function zeb(event, ui) {
-    //    if (ui.item.data('status') === 'remove') {
-    //    console.log('lal');
-    //    }
-    //  }
-  }).disableSelection();
-  //
-
   // localstorage
   function localSave() {
     localStorage.setItem('list', JSON.stringify(list));
@@ -44,13 +16,42 @@ $(document).ready(function load() {
   function localLoad() {
     list = localStorage.getItem('list');
   }
+  //
+  $('.active').children('ul').sortable({
+    connectWith: ".redcard > ul, .removed > ul",
+    update : function zed(event, ui) {
+      if (ui.item.closest('.active')) {
+        ui.item.attr({'data-status': 'active'});
+      }
+    }
+  });
+  $('.redcard').children('ul').sortable({
+    connectWith: ".active > ul, .removed > ul",
+    update : function() {
+      if (ui.item.closest('redcard')) {
+        ui.item.attr('data-status', 'redcard');
+      }
+    }
+  });
+  $('.removed').children('ul').sortable({
+    update : function() {
+      if (ui.item.closest('.removed')) {
+        ui.item.attr('data-status', 'removed');
+      }
+    }
+  });
+  //controller
 
+  //
+  //if (ui.item.parent().parent().hasClass('redcard')) {
+  //  ui.item.attr('data-status', 'redcard');
+  //}
   // get запрос and view??
   $.get(window.url).success(function getList(data) {
     data.map(function it(item) {
       // прорисовка
       $li = $('<li><h3>' + item.name + '</h3><h4>' + item.phone + '</h4></li>');
-      $li.attr({'id': item.id, 'data-status': item.status});
+      $li.attr({'data-id': item.id, 'data-status': item.status});
       if (item.status === 'removed') {
         $removedUl.append($li);
         return listRemove.push(item);
@@ -65,11 +66,4 @@ $(document).ready(function load() {
       }
     });
   });
-
-  //data.map(function zu(i) {
-  //  if (i.status === 'removed') {
-  //    li = $('<li><h3>'+i.name+'</h3><h4>'+i.phone+'</h4></li>');
-  //    ul = $('ul').append(li);
-  //  }
-  //});
 });
