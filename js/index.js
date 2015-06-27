@@ -8,6 +8,7 @@ $(document).ready(function load() {
   var listCard = [];
   var listActive = [];
   var $this = $(this);
+
   // localstorage
   function localSave() {
     localStorage.setItem('list', JSON.stringify(list));
@@ -16,33 +17,89 @@ $(document).ready(function load() {
   function localLoad() {
     list = localStorage.getItem('list');
   }
-  //
+
+  function drawField() {
+    var i;
+    var j;
+    var curPos;
+    var pos;
+    for (i = 0; i < list.length; i++) {
+      $li = $('<li><h3>' + list[i].name + '</h3><h4>' + list[i].phone + '</h4></li>');
+      $li.attr({'data-id': list[i].id, 'data-status': list[i].status});
+      for (j = 0; j < list.length; i++) {
+        pos = i + j * list.length;
+        curPos = list.state[pos];
+        if (list[i].status === 'removed') {
+          $removedUl.append($li);
+        }
+        if (list[i].status === 'active') {
+          $activeUl.append($li);
+        }
+        if (list[i].status === 'redcard') {
+          $redCardUl.append($li);
+        }
+        $li.attr({'data-pos' : curPos});
+      }
+    }
+    localSave();
+  }
+  localLoad();
+  if (list !== null) {
+    drawField();
+  }
+
+  //controller
   $('.active').children('ul').sortable({
     connectWith: ".redcard > ul, .removed > ul",
-    update : function zed(event, ui) {
+    receive: function zed(event, ui) {
       if (ui.item.closest('.active')) {
         ui.item.attr({'data-status': 'active'});
+        ui.item.attr('data-status', 'active');
+        $.post(window.url + '/' + ui.item.data('id').toString(), {'status': event.target.parentNode.className.split(' ')[1]}).done(
+          function () {
+            console.log('complete');
+          }
+        ).fail(
+          function () {
+            $('.active').children('ul').sortable('cancel');
+          }
+        )
       }
     }
   });
   $('.redcard').children('ul').sortable({
     connectWith: ".active > ul, .removed > ul",
-    update : function() {
+    receive: function red(event, ui) {
       if (ui.item.closest('redcard')) {
+        $.post(window.url + '/' + ui.item.data('id').toString(), {'status': event.target.parentNode.className.split(' ')[1]}).done(
+          function () {
+            console.log('complete');
+          }).fail(
+          function () {
+            $('.redcard').children('ul').sortable('cancel');
+          }
+        );
         ui.item.attr('data-status', 'redcard');
       }
     }
   });
   $('.removed').children('ul').sortable({
-    update : function() {
+    receive: function (event, ui) {
       if (ui.item.closest('.removed')) {
+        $.post(window.url + '/' + ui.item.data('id').toString(), {'status': event.target.parentNode.className.split(' ')[1]}).done(
+          function () {
+            console.log('complete');
+          }).fail(
+          function () {
+            $('.removed').children('ul').sortable('cancel');
+          }
+        );
         ui.item.attr('data-status', 'removed');
       }
     }
   });
-  //controller
 
-  //
+
   //if (ui.item.parent().parent().hasClass('redcard')) {
   //  ui.item.attr('data-status', 'redcard');
   //}
@@ -65,5 +122,7 @@ $(document).ready(function load() {
         return listCard.push(item);
       }
     });
+    list = data;
+    localSave();
   });
 });
