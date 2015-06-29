@@ -1,134 +1,59 @@
-  var list = null;
-  $(document).ready(function load() {
-    var $li;
-    var $activeUl = $('div.active ul');
-    var $redCardUl = $('div.redcard ul');
-    var $removedUl = $('div.removed ul');
-    var listRemove = [];
-    var listCard = [];
-    var listActive = [];
-    var $this = $(this);
+(function () {
+  var list = {
+    remove: [],
+    redcard: [],
+    active: []
+  };
+  var $activeUl = $('.active ul');
+  var $redCardUl = $('.redcard ul');
+  var $removedUl = $('.removed ul');
 
-    // localstorage
-    function localSave() {
-      localStorage.setItem('list', JSON.stringify(list));
+  // localstorage
+  function localSave() {
+  }
+
+  function localLoad() {
+  }
+
+  //controller
+  $('ul').sortable({
+    placeholder: 'placeholder',
+    connectWith: 'ul',
+    receive: function (event, ui) {
+      if (ui.sender.parents('.removed').length) {
+//          ui.sender.sortable('cancel');
+      } else {
+        var newItem = $(this).data('kind');
+        var id = $(ui.item).data('id');
+        $.post(window.url + '/' + id, {status: newItem}).error(function () {
+          ui.sender.sortable('cancel');
+        });
+      }
+    },
+    stop: function (event, ui) {
+
     }
 
-    function localLoad() {
-      list = localStorage.getItem('list');
-    }
-
-    function drawField() {
-      var i;
-      var j;
-      var curPos;
-      var pos;
-      for (i = 0; i < list.length; i++) {
-        $li = $('<li><h3>' + list[i].name + '</h3><h4>' + list[i].phone + '</h4></li>');
-        $li.attr({'data-id': list[i].id, 'data-status': list[i].status});
-        for (j = 0; j < list.length; i++) {
-          pos = i + j * list.length;
-          curPos = list.state[pos];
-          $li.attr({'data-pos': curPos});
-          if (list[i].status === 'removed') {
-            $removedUl.append($li);
-          }
-          if (list[i].status === 'active') {
-            $activeUl.append($li);
-          }
-          if (list[i].status === 'redcard') {
-            $redCardUl.append($li);
-          }
-
-        }
+  });
+  // get запрос and view??
+  $.get(window.url).success(function getList(data) {
+    data.map(function it(item) {
+      //template = $('<li><h3>' + item.name + '</h3><h4>' + item.phone + '</h4></li>');
+      //template.attr({'data-id': item.id, 'data-status': item.status});
+      if (item.status === 'removed') {
+        //$removedUl.append(template);
+        list.remove.push(item);
       }
-      localSave();
-    }
-
-    localLoad();
-    if (list !== null) {
-      drawField()
-    }
-
-    //controller
-    $('.active').children('ul').sortable({
-      connectWith: ".redcard > ul, .removed > ul",
-      remove: function zed(event, ui) {
-        if (ui.item.closest('.active')) {
-          ui.item.attr({'data-status': 'active'});
-          ui.item.attr('data-status', 'active');
-          $.post(window.url + '/' + ui.item.data('id').toString(), {'status': event.target.parentNode.className.split(' ')[1]}).done(
-            function () {
-              console.log('complete');
-            }
-          ).error(
-            function () {
-              $('.active').children('ul').sortable('cancel');
-            }
-          )
-        }
+      if (item.status === 'active') {
+        //$activeUl.append(template);
+        list.active.push(item);
       }
-    });
-    $('.redcard').children('ul').sortable({
-      connectWith: ".active > ul, .removed > ul",
-      remove: function red(event, ui) {
-        if (ui.item.closest('redcard')) {
-          $.post(window.url + '/' + ui.item.data('id').toString(), {'status': event.target.parentNode.className.split(' ')[1]}).done(
-            function () {
-              console.log('complete');
-            }).error(
-            function () {
-              $('.redcard').children('ul').sortable('cancel');
-            }
-          );
-          ui.item.attr('data-status', 'redcard');
-        }
+      if (item.status === 'redcard') {
+        //$redCardUl.append(template);
+        list.redcard.push(item);
       }
-    });
-    $('.removed').children('ul').sortable({
-      remove: function (event, ui) {
-        if (ui.item.closest('.removed')) {
-          $.post(window.url + '/' + ui.item.data('id').toString(), {'status': event.target.parentNode.className.split(' ')[1]}).done(
-            function () {
-              console.log('complete');
-            }).error(
-            function () {
-              $('.removed').children('ul').sortable('cancel');
-            }
-          );
-          ui.item.attr('data-status', 'removed');
-        }
-      }
-    });
-
-
-    //if (ui.item.parent().parent().hasClass('redcard')) {
-    //  ui.item.attr('data-status', 'redcard');
-    //}
-    // get запрос and view??
-    $.get(window.url).success(function getList(data) {
-
-      data.map(function it(item) {
-        // прорисовка
-        list.name = item.name;
-        list.phone = item.phone;
-        list.id = item.id;
-        console.log(list);
-        $li = $('<li><h3>' + item.name + '</h3><h4>' + item.phone + '</h4></li>');
-        $li.attr({'data-id': item.id, 'data-status': item.status});
-        if (item.status === 'removed') {
-          $removedUl.append($li);
-          return listRemove.push(item);
-        }
-        if (item.status === 'active') {
-          $activeUl.append($li);
-          return listActive.push(item);
-        }
-        if (item.status === 'redcard') {
-          $redCardUl.append($li);
-          return listCard.push(item);
-        }
-      });
-      localSave();
     });
   });
+})();
+//
+//
