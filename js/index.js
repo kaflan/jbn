@@ -9,10 +9,10 @@
   var $removedUl = $('.removed ul');
 
   // localstorage
-  function localSave() {
+  function Save() {
   }
 
-  function localLoad() {
+  function Load() {
   }
 
   //controller
@@ -55,5 +55,6 @@
     });
   });
 })();
-//
-//
+(function () {
+
+})();
