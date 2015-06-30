@@ -5,22 +5,46 @@
     active: []
   };
   var $lists = {
-    active : $('.active ul'),
+    active: $('.active ul'),
     redcard: $('.redcard ul'),
     removed: $('.removed ul')
   };
-
+  var sortOrder;
   var data;
-  $.get(window.url).success(function getList(newData) {
-    data = newData;
+  var app = angular.module('student', []);
+  // controller
+  //app.controller('', function(){});
+  // view
+  // model-view
+  app.directive('draggableList', function () {
+    return {
+      restrict: 'E',
+      template: '<ul><li data-id="item.id" data-status="item.status" ng-repeat="item in list"><h3>{{item.name}}}</h3><h4>{{item.phone}}</h4></li></ul>'
+    }
+  });
+  app.controller('ListCtrlStud', function ($scope, studentService) {
+    studentService.success(function (newData) {
+      console.log('success');
+      $scope.students = newData;
+    }).fail(function () {
+      console.log('fail');
+    });
+  });
+  app.service('studentService', function ($http) {
+    this.getStudent = function () {
+      return $http.get(window.url);
+    };
   });
 
   // localstorage
   // save
   function Save() {
+    localStorage.setItem('defaltSortOrder', JSON.stringify(defaltSortOrder));
   }
+
   // load
   function Load() {
+    JSON.parse(localStorage.getItem('defaltSortOrder'));
   }
 
   //controller
@@ -43,17 +67,10 @@
     }
 
   });
-  // get запрос and view??
 
 })();
-(function () {
-  var app = angular.module('student', []);
-  // controller
- app.controller('', function(){});
-  // view
-  // model-view
-  // app.directive('draggableList', function(){});
-})();
+//angular???
+
 //data.map(function it(item) {
 //  //template = $('<li><h3>' + item.name + '</h3><h4>' + item.phone + '</h4></li>');
 //  //template.attr({'data-id': item.id, 'data-status': item.status});

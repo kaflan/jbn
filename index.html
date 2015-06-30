@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="bower_components/jqueryui/themes/smoothness/theme.css">
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
 </head>
-<body>
+<body ng-app="student">
 <div class="jumbotron">
     <div class="container">
         <h1>Студенты курса</h1>
     </div>
 </div>
-<div class="row">
+<div class="row" ng-controller="ListCtrlStud">
     <div class="col-md-4 active">
         <h2>На курсе</h2>
         <draggable-list></draggable-list>
@@ -28,11 +28,11 @@
         <draggable-list></draggable-list>
     </div>
 </div>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.js"></script>
 <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
 <script type="text/javascript" src="bower_components/jqueryui/jquery-ui.min.js"></script>
 <script type="text/javascript" src="bower_components/lodash/lodash.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/index.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.js"></script>
 </body>
 </html>
