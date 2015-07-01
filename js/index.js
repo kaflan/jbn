@@ -19,7 +19,7 @@
   app.directive('draggableList', function () {
     return {
       restrict: 'E',
-      template: '<ul><li data-id="item.id" data-status="item.status" ng-repeat="item in list"><h3>{{item.name}}}</h3><h4>{{item.phone}}</h4></li></ul>'
+      template: '<ul><li data-id="item.id" data-status="item.status" ng-repeat="item in students"><h3>{{item.name}}}</h3><h4>{{item.phone}}</h4></li></ul>'
     }
   });
   app.controller('ListCtrlStud', function ($scope, studentService) {
