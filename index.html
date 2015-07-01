@@ -17,15 +17,33 @@
 <div class="row" ng-controller="ListCtrlStud">
     <div class="col-md-4 active">
         <h2>На курсе</h2>
-        <draggable-list></draggable-list>
+        <draggable-list items="active">
+            <ul>
+                <li  ng-repeat="item in students" data-id="{{item.id}}" data-status="{{item.status}}">
+                    <h3>{{item.name}}</h3><h4>{{item.phone}}</h4>
+                </li>
+            </ul>
+        </draggable-list>
     </div>
     <div class="col-md-4 redcard">
         <h2>На отчислении</h2>
-        <draggable-list></draggable-list>
+        <draggable-list items="redcard">
+            <ul>
+                <li  ng-repeat="item in students" data-id="{{item.id}}" data-status="{{item.status}}">
+                    <h3>{{item.name}}</h3><h4>{{item.phone}}</h4>
+                </li>
+            </ul>
+        </draggable-list>
     </div>
     <div class="col-md-4 removed">
         <h2>Отчислены</h2>
-        <draggable-list></draggable-list>
+        <draggable-list items="remover">
+            <ul>
+                <li  ng-repeat="item in students" data-id="{{item.id}}" data-status="{{item.status}}">
+                    <h3>{{item.name}}</h3><h4>{{item.phone}}</h4>
+                </li>
+            </ul>
+        </draggable-list>
     </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.js"></script>

@@ -18,22 +18,45 @@
   // model-view
   app.directive('draggableList', function () {
     return {
-      restrict: 'E',
-      template: '<ul><li data-id="item.id" data-status="item.status" ng-repeat="item in students"><h3>{{item.name}}}</h3><h4>{{item.phone}}</h4></li></ul>'
+      restrict: 'E'
     }
   });
-  app.controller('ListCtrlStud', function ($scope, studentService) {
-    studentService.success(function (newData) {
+  //controller  list student
+  app.controller('ListCtrlStud', function ($scope, studentService, sortService) {
+    studentService.getStudent().success(function (newData) {
       console.log('success');
       $scope.students = newData;
-    }).fail(function () {
+    }).error(function () {
       console.log('fail');
     });
+    sortService.getSort();
   });
   app.service('studentService', function ($http) {
     this.getStudent = function () {
       return $http.get(window.url);
     };
+  });
+  //controller sort
+  app.service('sortService', function() {
+    this.getSort = function () { return $('ul').sortable({
+      placeholder: 'placeholder',
+      connectWith: 'ul',
+      receive: function (event, ui) {
+        if (ui.sender.parents('.removed').length) {
+//          ui.sender.sortable('cancel');
+        } else {
+          var newStatus = $(this).data('status');
+          var id = $(ui.item).data('id');
+          $.post(window.url + '/' + id, {status: newStatus}).error(function () {
+            ui.sender.sortable('cancel');
+          });
+        }
+      },
+      stop: function (event, ui) {
+
+      }
+
+    });};
   });
 
   // localstorage
@@ -47,26 +70,7 @@
     JSON.parse(localStorage.getItem('defaltSortOrder'));
   }
 
-  //controller
-  $('ul').sortable({
-    placeholder: 'placeholder',
-    connectWith: 'ul',
-    receive: function (event, ui) {
-      if (ui.sender.parents('.removed').length) {
-//          ui.sender.sortable('cancel');
-      } else {
-        var newStatus = $(this).data('status');
-        var id = $(ui.item).data('id');
-        $.post(window.url + '/' + id, {status: newStatus}).error(function () {
-          ui.sender.sortable('cancel');
-        });
-      }
-    },
-    stop: function (event, ui) {
 
-    }
-
-  });
 
 })();
 //angular???
