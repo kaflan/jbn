@@ -18,26 +18,28 @@
   // model-view
   app.directive('draggableList', function () {
     return {
-      restrict: 'E'
+      restrict: 'E',
+      template: ' <ul><li  ng-repeat="item in students" data-id="{{item.id}}" data-status="{{item.status}}"><h3>{{item.name}}</h3><h4>{{item.phone}}</h4></li></ul>'
     }
   });
   //controller  list student
-  app.controller('ListCtrlStud', function ($scope, studentService, sortService) {
+  app.controller('ListCtrlStud', function (scope, studentService, sortableService) {
     studentService.getStudent().success(function (newData) {
       console.log('success');
-      $scope.students = newData;
+      scope.students = newData;
     }).error(function () {
       console.log('fail');
     });
-    sortService.getSort();
+    sortableService.getSort();
   });
+  //  $applyAsync([exp]);
   app.service('studentService', function ($http) {
     this.getStudent = function () {
       return $http.get(window.url);
     };
   });
   //controller sort
-  app.service('sortService', function() {
+  app.service('sortableService', function() {
     this.getSort = function () { return $('ul').sortable({
       placeholder: 'placeholder',
       connectWith: 'ul',
@@ -58,13 +60,21 @@
 
     });};
   });
+  app.service('listSortService', function(scope){
+
+    this.listSort = function () {
+        scope.students.map(function(item){
+          if(item.status === ''){}
+        });
+      };
+
+  });
 
   // localstorage
   // save
   function Save() {
     localStorage.setItem('defaltSortOrder', JSON.stringify(defaltSortOrder));
   }
-
   // load
   function Load() {
     JSON.parse(localStorage.getItem('defaltSortOrder'));
