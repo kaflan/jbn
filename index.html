@@ -17,27 +17,27 @@
 <div class="row" ng-controller="ListCtrlStud">
     <div class="col-md-4 active">
         <h2>На курсе</h2>
-        <draggable-list  ng-repeat="item in students" student="item" id="studentActive">
+        <draggable-list   items="active" id="studentActive">
 
         </draggable-list>
     </div>
     <div class="col-md-4 redcard">
         <h2>На отчислении</h2>
-        <draggable-list   student="item" ng-repeat="item in students" id="studentRedCard">
+        <draggable-list   items="redcard"  id="studentRedCard">
 
         </draggable-list>
     </div>
     <div class="col-md-4 removed">
         <h2>Отчислены</h2>
-        <draggable-list students="item" ng-repeat="item in students" id="studentRemoved">
+        <draggable-list items="remove"  id="studentRemoved">
 
         </draggable-list>
     </div>
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.js"></script>
 <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
 <script type="text/javascript" src="bower_components/jqueryui/jquery-ui.min.js"></script>
 <script type="text/javascript" src="bower_components/lodash/lodash.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.js"></script>
 <script src="js/config.js"></script>
 <script src="js/index.js"></script>
 </body>
