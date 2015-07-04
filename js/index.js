@@ -13,8 +13,9 @@
       template: ' <ul><li  ng-repeat="item in items"  data-id="{{item.id}}" data-status="{{item.status}}"><h3>{{item.name}}</h3><h4>{{item.phone}}</h4></li></ul>',
       link: function ($scope, $element) {
         //console.log(scope.students);
-        $scope.$watch('students', function (newValue, oldValue) {
-          console.log('изменилось', newValue, oldValue, $element);
+        $scope.$watch('items', function (newValue, oldValue) {
+
+          console.log('изменилось', newValue, oldValue);
         }, true);
         $element.sortable({
           //placeholder: 'placeholder',
@@ -25,6 +26,7 @@
             } else {
               var newStatus = $(this).data('status');
               var id = $(ui.item).data('id');
+              console.log(ui.item.data('status', newStatus));
               //$.post(window.url + '/' + id, {status: newStatus}).error(function () {
               //  ui.sender.sortable('cancel');
               //});
@@ -41,28 +43,46 @@
   app.controller('ListCtrlStud', function ($scope, studentService) {
     studentService.getStudent().success(function (newData) {
       console.log('success');
-      $scope.active = newData;
+      $scope.active = [];
+      $scope.students = newData;
+      $scope.redcard = [];
+      $scope.remove = [];
+      $scope.students.map(function (item) {
+        console.log('work');
+        if (item.status.data('status') === 'active') {
+          $scope.active.push(angular.copy($scope.students));
+        }
+        if (item.status.data('status') === 'redcard') {
+          $scope.redcard.push(angular.copy($scope.item));
+        }
+        if (item.status.data('status') === 'removed') {
+          $scope.remove.push(angular.copy($scope.item));
+        }
+      })
     }).error(function () {
       console.log('fail');
     });
-    //$scope.active = itemArr;
-  });
-  //  $applyAsync([exp]);
-  app.service('studentService', function ($http) {
-    this.getStudent = function () {
-      return $http.get(window.url);
-    };
+
+ //$scope.active = itemArr;
   });
 
-  // localstorage
-  // save
-  function Save() {
-    localStorage.setItem('defaltSortOrder', JSON.stringify(defaltSortOrder));
-  }
+//  $applyAsync([exp]);
+app.service('studentService', function ($http) {
+  this.getStudent = function () {
+    return $http.get(window.url);
+  };
+});
 
-  // load
-  function Load() {
-    JSON.parse(localStorage.getItem('defaltSortOrder'));
-  }
+// localstorage
+// save
+function Save() {
+  localStorage.setItem('defaltSortOrder', JSON.stringify(defaltSortOrder));
+}
 
-})();
+// load
+function Load() {
+  JSON.parse(localStorage.getItem('defaltSortOrder'));
+}
+
+})
+();
