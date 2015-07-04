@@ -26,7 +26,7 @@
             } else {
               var newStatus = $(this).data('status');
               var id = $(ui.item).data('id');
-              console.log(ui.item.data('status', newStatus));
+              //console.log(ui.item.data('status', newStatus));
               //$.post(window.url + '/' + id, {status: newStatus}).error(function () {
               //  ui.sender.sortable('cancel');
               //});
@@ -48,15 +48,18 @@
       $scope.redcard = [];
       $scope.remove = [];
       $scope.students.map(function (item) {
-        console.log('work');
-        if (item.status.data('status') === 'active') {
-          $scope.active.push(angular.copy($scope.students));
+        if (item.status === 'active') {
+          $scope.active.push(item);
+          console.log($scope.active);
+          return false;
         }
-        if (item.status.data('status') === 'redcard') {
-          $scope.redcard.push(angular.copy($scope.item));
+        if (item.status === 'redcard') {
+          $scope.redcard.push(item);
+          return false;
         }
-        if (item.status.data('status') === 'removed') {
-          $scope.remove.push(angular.copy($scope.item));
+        if (item.status === 'removed') {
+          $scope.remove.push(item);
+          return false;
         }
       })
     }).error(function () {
