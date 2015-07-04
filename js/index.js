@@ -15,22 +15,31 @@
         //console.log(scope.students);
         $scope.$watch('items', function (newValue, oldValue) {
 
-          console.log('изменилось', newValue, oldValue);
+          console.log( newValue, 'изменилось', oldValue);
         }, true);
         $element.sortable({
           //placeholder: 'placeholder',
           connectWith: 'ul',
           receive: function (event, ui) {
-            if (ui.sender.parents('.removed').length) {
-////          ui.sender.sortable('cancel');
-            } else {
-              var newStatus = $(this).data('status');
-              var id = $(ui.item).data('id');
-              //console.log(ui.item.data('status', newStatus));
+//            if (ui.sender.parents('.removed').length) {
+//            ui.sender.sortable('cancel');
+//            } else {
+//            .attribute.items
+//            $(ui.item).closest('draggable-list').attr('items')
+//            $( ".selector" ).sortable( "refresh" );
+            console.log(ui.item.data('status'));
+            var a = $(ui.item).index();
+            var newStatus = $(this).data('status');
+            ui.item.attr({'data-status': newStatus});
+            $scope.items.splice(a, 0);
+            console.log(ui.item.data('status'));
+            console.log($scope.items);
+            $scope.$applyAsync();
+            //console.log(ui.item.data('status', newStatus));
               //$.post(window.url + '/' + id, {status: newStatus}).error(function () {
               //  ui.sender.sortable('cancel');
               //});
-            }
+            //}
           },
           stop: function (event, ui) {
           }
