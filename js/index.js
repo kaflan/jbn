@@ -1,100 +1,103 @@
 ﻿(function () {
-  var data;
   var app = angular.module('jsbursa', []);
-  //var itemArr = [{"id":"1","name":"Jeremy Lane","phone":"(466) 514-6617","status":"active"},{"id":"2","name":"Austin Hunt","phone":"(314) 333-4959","status":"removed"},{"id":"3","name":"Ronald Campbell","phone":"(686) 869-6077","status":"removed"},{"id":"4","name":"Don Stewart","phone":"(328) 747-6780","status":"removed"},{"id":"5","name":"Jeremiah Jordan","phone":"(769) 969-5203","status":"removed"},{"id":"6","name":"Susie Frazier","phone":"(917) 781-9869","status":"removed"},{"id":"7","name":"Sally Larson","phone":"(965) 429-2716","status":"active"}];
   // model?? directive?
+  var data = null;
   app.directive('draggableList', function () {
     return {
       restrict: 'E',
       scope: {
-        items: '='
+        items: '=',
+        id: '@'
       },
       replace: true,
       template: ' <ul><li  ng-repeat="item in items"  data-id="{{item.id}}" data-status="{{item.status}}"><h3>{{item.name}}</h3><h4>{{item.phone}}</h4></li></ul>',
-      link: function ($scope, $element) {
-        //console.log(scope.students);
+      link: function ($scope, $element, attrs) {
+        var remove;
+        function saveToStorage(array) {
+          var arrToStorage = [];
+          angular.forEach(array, function (item) {
+            arrToStorage.push(item);
+          });
+          localStorage.setItem($scope.id, angular.toJson(arrToStorage));
+        }
+        function loadInStorage() {
+          data = JSON.parse(localStorage.getItem($scope.id));
+        }
+        //}
+        loadInStorage();
+        if($.isEmptyObject(data) === false){
+          console.log(data);
+          $scope.items = data;
+        }
         $scope.$watch('items', function (newValue, oldValue) {
-
-          console.log( newValue, 'изменилось', oldValue);
+          if($.isEmptyObject(newValue) === false){
+            console.log(newValue);
+            saveToStorage(newValue);
+          }
+          console.log('изменено :', newValue, 'изменилось c : ', oldValue);
         }, true);
         $element.sortable({
-          //placeholder: 'placeholder',
+          placeholder: 'placeholder',
           connectWith: 'ul',
-          receive: function (event, ui) {
-//            if (ui.sender.parents('.removed').length) {
-//            ui.sender.sortable('cancel');
-//            } else {
-//            .attribute.items
-//            $(ui.item).closest('draggable-list').attr('items')
-//            $( ".selector" ).sortable( "refresh" );
-            console.log(ui.item.data('status'));
-            var a = $(ui.item).index();
-            var newStatus = $(this).data('status');
-            ui.item.attr({'data-status': newStatus});
-            $scope.items.splice(a, 0);
-            console.log(ui.item.data('status'));
-            console.log($scope.items);
+          remove: function (event, ui) {
             $scope.$applyAsync();
-            //console.log(ui.item.data('status', newStatus));
-              //$.post(window.url + '/' + id, {status: newStatus}).error(function () {
-              //  ui.sender.sortable('cancel');
-              //});
-            //}
+            remove = true;
+          },
+          start: function start(event, ui) {
+            var a = $(ui.item).index();
+            $(ui.item).data('item', $scope.items[a]);
+            $scope.items.splice(a, 1);
+          },
+          receive: function (event, ui) {
+            var a = $(ui.item).index();
+            //$(ui.item).data({'item' : $scope.items[a]});
+            var getDat = $(ui.item).data('item');
+            $scope.items.splice(a, 0, getDat);
+            var tempItems = angular.copy($scope.items);
+            $scope.items = [];
+            $scope.$applyAsync();
+            setTimeout(function () {
+              $scope.items = tempItems;
+              $scope.$applyAsync();
+            }, 0);
           },
           stop: function (event, ui) {
+            if (remove) {
+              remove = false;
+              return;
+            }
+            var a = $(ui.item).index();
+            var getDat = $(ui.item).data('item');
+            console.log('stop', getDat);
+            console.log(a);
+            $scope.items.splice(a, 0, getDat);
+            $scope.$applyAsync();
           }
         });
-        $scope.$applyAsync();
       }
     };
   });
   //controller  list student
-  app.controller('ListCtrlStud', function ($scope, studentService) {
-    studentService.getStudent().success(function (newData) {
-      console.log('success');
-      $scope.active = [];
-      $scope.students = newData;
-      $scope.redcard = [];
-      $scope.remove = [];
-      $scope.students.map(function (item) {
-        if (item.status === 'active') {
-          $scope.active.push(item);
-          console.log($scope.active);
-          return false;
-        }
-        if (item.status === 'redcard') {
-          $scope.redcard.push(item);
-          return false;
-        }
-        if (item.status === 'removed') {
-          $scope.remove.push(item);
-          return false;
-        }
-      })
-    }).error(function () {
-      console.log('fail');
-    });
-
- //$scope.active = itemArr;
+  app.controller('ListCtrlStud', function ($scope) {
+    var itemArr = [{"id": "1", "name": "Jeremy Lane", "phone": "(466) 514-6617", "status": "active"}, {
+      "id": "2",
+      "name": "Austin Hunt",
+      "phone": "(314) 333-4959",
+      "status": "removed"
+    },
+      {"id": "5", "name": "Jeremiah Jordan", "phone": "(769) 969-5203", "status": "removed"}, {
+        "id": "6",
+        "name": "Susie Frazier",
+        "phone": "(917) 781-9869",
+        "status": "removed"
+      },
+      {"id": "7", "name": "Sally Larson", "phone": "(965) 429-2716", "status": "active"}];
+    var anArray = [];
+    var oneArray = [];
+    $scope.active = itemArr;
+    $scope.redcard = anArray;
+    $scope.removed = oneArray;
   });
-
-//  $applyAsync([exp]);
-app.service('studentService', function ($http) {
-  this.getStudent = function () {
-    return $http.get(window.url);
-  };
-});
-
-// localstorage
-// save
-function Save() {
-  localStorage.setItem('defaltSortOrder', JSON.stringify(defaltSortOrder));
-}
-
-// load
-function Load() {
-  JSON.parse(localStorage.getItem('defaltSortOrder'));
-}
 
 })
 ();
